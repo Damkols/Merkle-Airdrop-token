@@ -14,10 +14,11 @@ contract CounterTest is Test {
     bytes32 root =
         0xc87618c6c49eb4b0825fe2b7323eb2d0a34647d57571acbc0eed60825db81123;
 
-    address user1 = 0x001Daa61Eaa241A8D89607194FC3b1184dcB9B4C;
+    address user2 = 0x005FbBABD1e619324011d3312CF6166921A294aF;
     uint user1Amt = 45000000000000;
+    uint expectedAmt = 47000000000000;
 
-    Result public r;
+    Result public result;
 
     function setUp() public {
         airdrop = new Airdrop(root);
@@ -26,17 +27,19 @@ contract CounterTest is Test {
         string memory json = vm.readFile(path);
 
         bytes memory res = json.parseRaw(
-            string.concat(".", vm.toString(user1))
+            string.concat(".", vm.toString(user2))
         );
 
-        r = abi.decode(res, (Result));
+        result = abi.decode(res, (Result));
     }
 
     function testClaim() public {
-        bool success = airdrop.claim(r.proof, user1, user1Amt);
-
-        assertEq(airdrop.balanceOf(user1), user1Amt);
-
+        bool success = airdrop.claim(result.proof, user2, expectedAmt);
         assertTrue(success);
+    }
+
+    function testBalance() public {
+    testClaim();
+    assertEq(airdrop.balanceOf(user2), expectedAmt);
     }
 }
